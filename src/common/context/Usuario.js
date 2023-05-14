@@ -1,7 +1,6 @@
 import React from "react";
 import { createContext, useState } from "react";
 
-Componente.contextType = UsuarioContext;
 
 export const UsuarioContext = createContext();
 UsuarioContext.displayName = "Usuario";
