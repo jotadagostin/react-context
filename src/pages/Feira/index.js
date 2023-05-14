@@ -9,6 +9,7 @@ import NavBar from './NavBar';
 
 
 function Feira() {
+  
   return (
     <Container>
       <NavBar />
