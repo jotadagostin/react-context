@@ -9,13 +9,18 @@ import {
 } from "./styles";
 import { useCarrinhoContext } from "common/context/Carinho";
 import Produto from "components/Produto";
+import { useHistory } from "react-router-dom";
+import { PagamentoContext } from "common/context/Pagamento";
 
 function Carrinho() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const { carrinho } = useCarrinhoContext();
+  const { formaPagamento} = useState(PagamentoContext)
+  const history = useHistory();
   return (
     <Container>
-      <Voltar />
+      <Voltar onClick={() => history.goBack()} />
+      {formaPagamento.nome}
       <h2>Carrinho</h2>
       {carrinho.map((produto) => {
         <Produto {...produto} key={produto.id} />;
