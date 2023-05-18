@@ -3,7 +3,7 @@ import Feira from "pages/Feira";
 import Login from "pages/Login";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { UsuarioProvider } from "common/context/Usuario";
-import { CarrinhoProvider } from "common/context/Carinho";
+import { CarrinhoProvider } from "common/context/Carrinho";
 import { PagamentoProvider } from "common/context/Pagamento";
 
 function Router() {

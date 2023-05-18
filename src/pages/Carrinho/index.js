@@ -13,7 +13,7 @@ import {
   TotalContainer,
   PagamentoContainer,
 } from "./styles";
-import { useCarrinhoContext } from "common/context/Carinho";
+import { useCarrinhoContext } from "common/context/Carrinho";
 import Produto from "components/Produto";
 import { useHistory } from "react-router-dom";
 import { PagamentoContext } from "common/context/Pagamento";
