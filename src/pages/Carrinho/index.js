@@ -15,8 +15,8 @@ import { UsuarioContext } from "common/context/Usuario";
 
 function Carrinho() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const { carrinho, valorTotalCarrinho } = useCarrinhoContext();
-  const { saldo = 0} = useContext(UsuarioContext);
+  const { carrinho, valorTotalCarrinho, efetuarCompra } = useCarrinhoContext();
+  const { saldo = 0 } = useContext(UsuarioContext);
 
   const { tiposPagamento, formaPagamento, mudarFormaPagamento } =
     usePagamentoContext();
@@ -53,9 +53,10 @@ function Carrinho() {
       </TotalContainer>
       <Button
         onClick={() => {
+          efetuarCompra();
           setOpenSnackbar(true);
         }}
-        disabled={total < 0}
+        disabled={total < 0 || carrinho.length === 0}
         color="primary"
         variant="contained">
         Comprar
