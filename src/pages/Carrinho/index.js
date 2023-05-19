@@ -16,7 +16,8 @@ import { UsuarioContext } from "common/context/Usuario";
 function Carrinho() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const { carrinho, valorTotalCarrinho } = useCarrinhoContext();
-  const { saldo = 0 } = useContext(UsuarioContext);
+  const { saldo = 0} = useContext(UsuarioContext);
+
   const { tiposPagamento, formaPagamento, mudarFormaPagamento } =
     usePagamentoContext();
   const history = useHistory();
