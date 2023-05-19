@@ -1,11 +1,9 @@
-import React from "react";
 import { createContext, useState } from "react";
-
 
 export const UsuarioContext = createContext();
 UsuarioContext.displayName = "Usuario";
 
-export const UsuarioProvider = ({ children }) => {
+export default function UsuarioProvider({ children }) {
   const [nome, setNome] = useState("");
   const [saldo, setSaldo] = useState(0);
   return (
@@ -13,4 +11,4 @@ export const UsuarioProvider = ({ children }) => {
       {children}
     </UsuarioContext.Provider>
   );
-};
+}
