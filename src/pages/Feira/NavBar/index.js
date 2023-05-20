@@ -7,16 +7,15 @@ import { useCarrinhoContext } from "common/context/Carrinho";
 import { useHistory } from "react-router-dom";
 
 export default function NavBar() {
-  const { quantidadeProdutos } = useCarrinhoContext();
+  const { quantidadeCarrinho } = useCarrinhoContext();
   const history = useHistory();
   return (
     <Nav>
       <Logo />
-      {quantidadeProdutos}
       <IconButton
-        disabled={quantidadeProdutos === 0}
+        disabled={quantidadeCarrinho === 0}
         onClick={() => history.push("/carrinho")}>
-        <Badge color="primary" badgeContent={quantidadeProdutos}>
+        <Badge color="primary" badgeContent={quantidadeCarrinho}>
           <ShoppingCartIcon />
         </Badge>
       </IconButton>
