@@ -1,5 +1,5 @@
 import Carrinho from "pages/Carrinho";
-import Feira from "pages/Feira";
+import  Feira  from "pages/Feira";
 import Login from "pages/Login";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { UsuarioProvider } from "common/context/Usuario";
