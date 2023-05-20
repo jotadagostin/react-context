@@ -36,7 +36,7 @@ function Produto({
           >
             <RemoveIcon />
           </IconButton>
-          {produtoNoCarrinho?.quantidade || 0}
+          {itemNoCarrinho?.quantidade || 0}
           <IconButton
             color="primary"
             disabled={valorTotal > saldo}
