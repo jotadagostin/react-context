@@ -4,17 +4,18 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import IconButton from "@material-ui/core/IconButton";
 import Badge from "@material-ui/core/Badge";
 import { useCarrinhoContext } from "common/context/Carrinho";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
-  const { quantidadeCarrinho } = useCarrinhoContext();
-  const history = useHistory();
+  const { quantidadeProdutos } = useCarrinhoContext();
+  const navigate = useNavigate();
+
   return (
     <Nav>
-      <Logo />
+      <Logo onClick={() => navigate("/")} />
       <IconButton
-        disabled={quantidadeCarrinho === 0}
-        onClick={() => history.push("/carrinho")}>
+        disabled={quantidadeProdutos === 0}
+        onClick={() => navigate("/carrinho")}>
         <Badge color="primary" badgeContent={quantidadeCarrinho}>
           <ShoppingCartIcon />
         </Badge>
