@@ -1,16 +1,20 @@
 import { Button } from "@material-ui/core";
 import { Container, Titulo, InputContainer } from "./styles";
 import { Input, InputLabel, InputAdornment } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
+
+// importando context para usar seus props de routes.js
+
 import { UsuarioContext } from "common/context/Usuario";
 import { useContext } from "react";
 
 function Login() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { nome, setNome, saldo, setSaldo } = useContext(UsuarioContext);
   
   return (
     <Container>
+       {/* Agora que estamos usando o useContext, não precisamos mais usar o UsuarioContext.Consumer */}
       <Titulo>Insira o seu nome</Titulo>
       <InputContainer>
         <InputLabel>Nome</InputLabel>
@@ -32,8 +36,9 @@ function Login() {
       <Button
         variant="contained"
         color="primary"
-        disabled={nome.length < 4}
-        onClick={() => history.push("/feira")}>
+        // validação do nome para seguir para a próxima página
+        disabled={nome.length < 3}
+        onClick={() => navigate("/feira")}>
         Avançar
       </Button>
     </Container>
