@@ -6,7 +6,9 @@ import { useContext } from "react";
 import { UsuarioContext } from "common/context/Usuario";
 
 function Feira() {
-  const {nome, saldo = 0} = useContext(UsuarioContext);
+  // Pegando dados do contexto de Login para uso em feira
+  const {nome, saldo} = useContext(UsuarioContext);
+  
   return (
     <Container>
       <NavBar />
