@@ -1,31 +1,19 @@
-import {
-  Button,
-  Snackbar,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@material-ui/core";
-import MuiAlert from "@material-ui/lab/Alert";
-import { useContext, useState, useMemo } from "react";
-import {
-  Container,
-  Voltar,
-  TotalContainer,
-  PagamentoContainer,
-} from "./styles";
-import { useCarrinhoContext } from "common/context/Carrinho";
-import Produto from "components/Produto";
-import { usePagamentoContext } from "common/context/Pagamento";
-import { UsuarioContext } from "common/context/Usuario";
-import { useNavigate } from "react-router-dom";
+import { Button, Snackbar, InputLabel, Select, MenuItem } from '@material-ui/core';
+import MuiAlert from '@material-ui/lab/Alert';
+import { useCarrinhoContext } from 'common/context/Carrinho';
+import { usePagamentoContext } from 'common/context/Pagamento';
+import { UsuarioContext } from 'common/context/Usuario';
+import Produto from 'components/Produto';
+import { useContext, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Container, Voltar, TotalContainer, PagamentoContainer } from './styles';
 
 function Carrinho() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const { carrinho, valorTotal, efetuarCompra } = useCarrinhoContext();
   // atualizando o saldo do usuário no carrinho. Colocamos o '= 0' para que ele não comece como undefined
   const { saldo } = useContext(UsuarioContext);
-  const { tiposPagamento, formaPagamento, mudarFormaPagamento } =
-    usePagamentoContext();
+  const { tiposPagamento, formaPagamento, mudarFormaPagamento } = usePagamentoContext();
   const navigate = useNavigate();
   // o useMemo é parecido com o useEffect e vai manter o componente que tem "total" sem re-renderizar, a não ser que "saldo" ou "valorTotal" sofram alteração
   const total = useMemo(() => saldo - valorTotal, [saldo, valorTotal]);
@@ -33,12 +21,17 @@ function Carrinho() {
   return (
     <Container>
       <div>
-        <Voltar onClick={() => navigate("/feira")} />
-        <h2>Carrinho</h2>
+        <Voltar onClick={() => navigate('/feira')} />
+        <h2>
+          Carrinho
+        </h2>
       </div>
       {/* mostrando itens adicionados no carrinho na página de Carrinho */}
-      {carrinho.map((produto) => (
-        <Produto {...produto} key={produto.id} />
+      {carrinho.map(produto => (
+        <Produto
+          {...produto}
+          key={produto.id}
+        />
       ))}
       <PagamentoContainer>
         <InputLabel> Forma de Pagamento </InputLabel>
@@ -73,22 +66,29 @@ function Carrinho() {
           efetuarCompra();
         }}
         color="primary"
-        variant="contained">
+        variant="contained"
+      >
         Comprar
       </Button>
       <Snackbar
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
+        anchorOrigin={
+          {
+            vertical: 'top',
+            horizontal: 'right'
+          }
+        }
         open={openSnackbar}
-        onClose={() => setOpenSnackbar(false)}>
-        <MuiAlert onClose={() => setOpenSnackbar(false)} severity="success">
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <MuiAlert
+          onClose={() => setOpenSnackbar(false)}
+          severity="success"
+        >
           Compra feita com sucesso!
         </MuiAlert>
       </Snackbar>
-    </Container>
+    </Container >
   );
 }
 
-export default Carrinho;
+export default Carrinho;;

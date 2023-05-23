@@ -1,10 +1,10 @@
-import { Nav } from "./styles";
-import { ReactComponent as Logo } from "assets/logo.svg";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
-import { useCarrinhoContext } from "common/context/Carrinho";
-import { useNavigate } from "react-router-dom";
+import { Nav } from './styles';
+import { ReactComponent as Logo } from 'assets/logo.svg';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import IconButton from '@material-ui/core/IconButton';
+import Badge from '@material-ui/core/Badge';
+import { useCarrinhoContext } from 'common/context/Carrinho';
+import { useNavigate } from 'react-router-dom';
 
 export default function NavBar() {
   const { quantidadeProdutos } = useCarrinhoContext();
@@ -12,11 +12,16 @@ export default function NavBar() {
 
   return (
     <Nav>
-      <Logo onClick={() => navigate("/")} />
+      <Logo onClick={() => navigate('/')} />
       <IconButton
+        onClick={() => navigate('/carrinho')}
         disabled={quantidadeProdutos === 0}
-        onClick={() => navigate("/carrinho")}>
-        <Badge color="primary" badgeContent={quantidadeCarrinho}>
+      >
+        <Badge
+          color="primary"
+          // o badgeContent é uma propriedade do material ui que mostra o número sobre o ícone
+          badgeContent={quantidadeProdutos}
+        >
           <ShoppingCartIcon />
         </Badge>
       </IconButton>

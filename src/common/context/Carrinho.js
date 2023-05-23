@@ -1,122 +1,118 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { usePagamentoContext } from "./Pagamento";
-import { UsuarioContext } from "./Usuario";
+import { createContext, useContext, useEffect, useState } from 'react';
+import { usePagamentoContext } from './Pagamento';
+import { UsuarioContext } from './Usuario';
 
 export const CarrinhoContext = createContext();
-CarrinhoContext.displayName = "Carrinho";
+CarrinhoContext.displayName = 'Carrinho';
 
 export const CarrinhoProvider = ({ children }) => {
-  const [carrinho, setCarrinho] = useState([]);
-  const [quantidadeProdutos, setQuantidadeProdutos] = useState(0);
-  const [valorTotal, setValorTotal] = useState(0);
-  return (
-    <CarrinhoContext.Provider
-      value={{
+    const [carrinho, setCarrinho] = useState([]);
+    const [quantidadeProdutos, setQuantidadeProdutos] = useState(0);
+    const [valorTotal, setValorTotal] = useState(0);
+
+    return (
+        <CarrinhoContext.Provider value={{
+            carrinho,
+            setCarrinho,
+            quantidadeProdutos,
+            setQuantidadeProdutos,
+            valorTotal,
+            setValorTotal
+        }}>
+            {children}
+        </CarrinhoContext.Provider>
+    );
+
+};
+
+// criando um custom hook para usar o contexto de carrinho em outros componentes
+export const useCarrinhoContext = () => {
+    // pega os states de CarrinhoProvider
+    const {
         carrinho,
         setCarrinho,
         quantidadeProdutos,
         setQuantidadeProdutos,
         valorTotal,
-        setValorTotal,
-      }}>
-      {children}
-    </CarrinhoContext.Provider>
-  );
-};
+        setValorTotal
+    } = useContext(CarrinhoContext);
 
-// Criando um custom hook para usar o contexto de carrinho em outros componentes
+    const { formaPagamento } = usePagamentoContext();
 
-export const useCarrinhoContext = () => {
-  // Pega os states de CarrinhoProvider
-  const {
-    carrinho,
-    setCarrinho,
-    quantidadeProdutos,
-    setQuantidadeProdutos,
-    valorTotal,
-    setValorTotal,
-  } = useContext(CarrinhoContext);
+    const { setSaldo } = useContext(UsuarioContext);
 
-  const { formaPagamento } = usePagamentoContext();
-  const { setSaldo } = useContext(UsuarioContext);
-
-  // visto que a lógica dentro de adicionarProduto e removerProduto é muito parecida, vamos criar uma função específica para mudar a quantidade dos produtos, que será chamada dentro de cada uma das funções mencionadas
-
-  function mudarQuantidade(id, quantidade) {
-    return carrinho.map((itemDoCarrinho) => {
-      if (itemDoCarrinho.id === id) itemDoCarrinho.quantidade += quantidade;
-    });
-  }
-
-  function adicionarProduto(novoProduto) {
-    // validando se ja` existe produto no carrinho
-    const temProduto = carrinho.some(
-      (itemDoCarrinho) => itemDoCarrinho.id === novoProduto.id
-    );
-
-    // se nao tem o produto
-    if (!temProduto) {
-      // o novo produto e` adicionado com quantidade = 1
-      novoProduto.quantidade = 1;
-      // retorna um novo array com os itens anteriores mais o novo produto
-      return setCarrinho((carrinhoAnterior) => [
-        ...carrinhoAnterior,
-        novoProduto,
-      ]);
+    // visto que a lógica dentro de adicionarProduto e removerProduto é muito parecida, vamos criar uma função específica para mudar a quantidade dos produtos, que será chamada dentro de cada uma das funções mencionadas
+    function mudarQuantidade(id, quantidade) {
+        return carrinho.map(itemDoCarrinho => {
+            if (itemDoCarrinho.id === id) itemDoCarrinho.quantidade += quantidade;
+            return itemDoCarrinho;
+        });
     }
-    // se já tiver o produto, seta o carrinho com os itens anteriores e mapeia o produto existente através do id dele
-    setCarrinho(mudarQuantidade(novoProduto.id, 1));
-  }
 
-  function removerProduto(id) {
-    // identificando o produto
-    const produto = carrinho.find((itemDoCarrinho) => itemDoCarrinho.id === id);
-    // identificando se a quantidade do produto é 1 (pois se for 0, precisamos removê-lo por completo do carrinho)
-    const ehUltimo = produto.quantidade === 1;
+    function adicionarProduto(novoProduto) {
+        // validando se já existe o produto no carrinho
+        const temProduto = carrinho.some(itemDoCarrinho => itemDoCarrinho.id === novoProduto.id);
 
-    if (ehUltimo) {
-      // retorna o carrinho anterior apenas com os itens que tiverem o id diferente do que informamos
-      return setCarrinho((carrinhoAnterior) =>
-        carrinhoAnterior.filter((itemDoCarrinho) => itemDoCarrinho.id !== id)
-      );
+        // se não tiver o produto
+        if (!temProduto) {
+            // o novo produto é adicionado com quantidade = 1
+            novoProduto.quantidade = 1;
+            // retorna um novo array com os itens anteriores mais o novo produto
+            return setCarrinho(carrinhoAnterior => [...carrinhoAnterior, novoProduto]);
+        }
+
+        // se já tiver o produto, seta o carrinho com os itens anteriores e mapeia o produto existente através do id dele
+        setCarrinho(mudarQuantidade(novoProduto.id, 1));
     }
-    setCarrinho(mudarQuantidade(id, -1));
-  }
 
-  // efetuando compra
-  function efetuarComprar() {
-    setCarrinho([]);
-    setSaldo((saldoAtual) => saldoAtual - valorTotal);
-  }
+    function removerProduto(id) {
+        // identificando o produto
+        const produto = carrinho.find((itemDoCarrinho) => itemDoCarrinho.id === id);
+        // identificando se a quantidade do produto é 1 (pois se for 0, precisamos removê-lo por completo do carrinho)
+        const ehUltimo = produto.quantidade === 1;
 
-  // mostrando a quantidade de produtos no carrinho. Como é um listener, vamos usar useEffect
-  // usaremos o reduce, que fará um loop em cada objeto (produto) e contará as quantidades
-  // reduce recebe dois parâmetros: o contador e o produto. Adicionaremos ao contador (que começa como 0 -> segundo parâmetro do bloco do reduce) e adicionamos a quantidade de cada produto a ele
-  // na refatoração, o reduce lida agora com objetos, pois temos que tratar tanto as quantidades quanto o valor total
+        // se o item só tiver quantidade = 1
+        if (ehUltimo) {
+            // retorna o carrinho anterior apenas com os itens que tiverem o id diferente do que informamos
+            return setCarrinho(carrinhoAnterior => carrinhoAnterior.filter(itemDoCarrinho => itemDoCarrinho.id !== id));
+        }
 
-  useEffect(() => {
-    const { novaQuantidade, novoTotal } = carrinho.reduce(
-      (contador, produto) => ({
-        novaQuantidade: contador.novaQuantidade + produto.quantidade,
-        novoTotal: contador.novoTotal + (produto.valor * produto.quantidade)
-      }),
-      { novaQuantidade: 0, novoTotal: 0 }
-    );
-    setQuantidadeProdutos(novaQuantidade);
-    // total do carrinho com juros
-    setValorTotal(novoTotal * formaPagamento.juros);
-  }, [carrinho, setQuantidadeProdutos, setValorTotal, formaPagamento]);
+        setCarrinho(mudarQuantidade(id, -1));
+    }
 
-  return {
-    carrinho,
-    setCarrinho,
-    adicionarProduto,
-    removerProduto,
-    quantidadeProdutos,
-    setQuantidadeProdutos,
-    valorTotal,
-    efetuarComprar
-  };
+    // efetuando a compra
+    function efetuarCompra() {
+        setCarrinho([]);
+        setSaldo((saldoAtual => saldoAtual - valorTotal));
+    }
+
+    // mostrando a quantidade de produtos no carrinho. Como é um listener, vamos usar useEffect
+    useEffect(() => {
+        // usaremos o reduce, que fará um loop em cada objeto (produto) e contará as quantidades
+        // reduce recebe dois parâmetros: o contador e o produto. Adicionaremos ao contador (que começa como 0 -> segundo parâmetro do bloco do reduce) e adicionamos a quantidade de cada produto a ele
+        // na refatoração, o reduce lida agora com objetos, pois temos que tratar tanto as quantidades quanto o valor total
+        const { novaQuantidade, novoTotal } = carrinho.reduce((contador, produto) => ({
+            novaQuantidade: contador.novaQuantidade + produto.quantidade,
+            novoTotal: contador.novoTotal + (produto.valor * produto.quantidade)
+        }), {
+            novaQuantidade: 0,
+            novoTotal: 0
+        });
+        setQuantidadeProdutos(novaQuantidade);
+        // total do carrinho com juros
+        setValorTotal(novoTotal * formaPagamento.juros);
+    }, [carrinho, setQuantidadeProdutos, setValorTotal, formaPagamento]);
+
+    return {
+        carrinho,
+        setCarrinho,
+        adicionarProduto,
+        removerProduto,
+        quantidadeProdutos,
+        setQuantidadeProdutos,
+        valorTotal,
+        efetuarCompra
+    };
 };
 
 // O valor do parâmetro de createContext é o valor default que definimos no atributo value do Provider. Normalmente, quando trabalhamos com contextos mais simples, o parâmetro default é usado dentro dos parênteses, mas como nossos contextos nesse projeto são um pouco mais complexos, usamos value mesmo.
