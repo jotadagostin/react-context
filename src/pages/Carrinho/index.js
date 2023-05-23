@@ -15,28 +15,28 @@ import {
 } from "./styles";
 import { useCarrinhoContext } from "common/context/Carrinho";
 import Produto from "components/Produto";
-import { useHistory } from "react-router-dom";
-import { usePagamento } from "common/context/Pagamento";
+import { usePagamentoContext } from "common/context/Pagamento";
 import { UsuarioContext } from "common/context/Usuario";
+import { useNavigate } from "react-router-dom";
 
 function Carrinho() {
-  const {
-    carrinho,
-    quantidadeCarrinho,
-    comprar,
-    valorTotal = 0,
-  } = useCarrinhoContext();
-  const { saldo = 0 } = useContext(UsuarioContext);
-  const { formaPagamento, mudarFormaPagamento, tiposPagamento } =
-    usePagamento();
-  const { openSnackbar, setOpenSnackbar } = useState(false);
-  const history = useHistory();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const { carrinho, valorTotal, efetuarCompra } = useCarrinhoContext();
+  // atualizando o saldo do usuário no carrinho. Colocamos o '= 0' para que ele não comece como undefined
+  const { saldo } = useContext(UsuarioContext);
+  const { tiposPagamento, formaPagamento, mudarFormaPagamento } =
+    usePagamentoContext();
+  const navigate = useNavigate();
+  // o useMemo é parecido com o useEffect e vai manter o componente que tem "total" sem re-renderizar, a não ser que "saldo" ou "valorTotal" sofram alteração
   const total = useMemo(() => saldo - valorTotal, [saldo, valorTotal]);
 
   return (
     <Container>
-      <Voltar onClick={history.goBack} />
-      <h2>Carrinho</h2>
+      <div>
+        <Voltar onClick={() => navigate("/feira")} />
+        <h2>Carrinho</h2>
+      </div>
+      {/* mostrando itens adicionados no carrinho na página de Carrinho */}
       {carrinho.map((produto) => (
         <Produto {...produto} key={produto.id} />
       ))}
@@ -44,10 +44,10 @@ function Carrinho() {
         <InputLabel> Forma de Pagamento </InputLabel>
         <Select
           value={formaPagamento.id}
-          onChange={(event) => mudarFormaPagamento(event.target.value)}>
-          {tiposPagamento.map((pagamento) => (
-            <MenuItem value={pagamento.id} key={pagamento.id}>
-              {pagamento.nome}
+          onChange={(e) => mudarFormaPagamento(e.target.value)}>
+          {tiposPagamento.map((tipo) => (
+            <MenuItem value={tipo.id} key={tipo.id}>
+              {tipo.nome}
             </MenuItem>
           ))}
         </Select>
@@ -55,11 +55,11 @@ function Carrinho() {
       <TotalContainer>
         <div>
           <h2>Total no Carrinho: </h2>
-          <span>R$ {valorTotal.toFixed(2)}</span>
+          <span>R$ {valorTotal.toFixed(2)} </span>
         </div>
         <div>
           <h2> Saldo: </h2>
-          <span> R$ {saldo.toFixed(2)} </span>
+          <span> R$ {Number(saldo).toFixed(2)}</span>
         </div>
         <div>
           <h2> Saldo Total: </h2>
@@ -67,11 +67,11 @@ function Carrinho() {
         </div>
       </TotalContainer>
       <Button
+        disabled={total < 0 || carrinho.length === 0}
         onClick={() => {
-          comprar();
           setOpenSnackbar(true);
+          efetuarCompra();
         }}
-        disabled={quantidadeCarrinho === 0 || total < 0}
         color="primary"
         variant="contained">
         Comprar
